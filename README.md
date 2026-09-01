@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cuartel del Músico — Streaming + Gestión
 
-## Getting Started
+Plataforma para la sala de ensayo **Cuartel del Músico** (Concepción). Dos partes en un solo proyecto:
 
-First, run the development server:
+1. **Sitio público** (`/`, `/agenda`): streaming embebido (YouTube) + agenda de bandas.
+2. **Panel de gestión** (`/panel`, requiere login): reservas de sala, bandas/clientes, inventario de equipos y cobros.
+
+## Fases del streaming
+
+- **Fase 1 (actual):** modo `playlist` — se muestra una lista de reproducción de YouTube con sesiones grabadas, mientras se arma el streaming en vivo físico (cámara + audio + OBS en la sala).
+- **Fase 2:** modo `live` — se cambia a un video/transmisión en vivo de YouTube. El cambio se hace desde `/panel/streaming`, sin tocar código.
+
+## Stack
+
+- Next.js (App Router) + TypeScript + Tailwind CSS
+- Prisma + SQLite (fácil de migrar a Postgres para producción)
+- NextAuth (credenciales) protegiendo `/panel` vía `src/proxy.ts`
+
+## Primeros pasos
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run db:seed   # crea el usuario admin y datos de ejemplo
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Usuario admin de partida** (cámbialo apenas entres, no hay pantalla de "cambiar contraseña" todavía — se actualiza directo en la base o se re-corre el seed con otra clave):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+admin@cuarteldelmusico.cl / cambiar123
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Comandos útiles
 
-## Learn More
+- `npm run db:studio` — explorador visual de la base de datos (Prisma Studio).
+- `npx prisma migrate dev --name <cambio>` — crear una migración después de editar `prisma/schema.prisma`.
 
-To learn more about Next.js, take a look at the following resources:
+## Próximos pasos sugeridos
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Configurar el ID de la playlist de YouTube en `/panel/streaming`.
+- Cuando esté lista la señal física en vivo (cámara/audio + OBS → YouTube Live), cambiar el modo a `live` desde el mismo panel.
+- Fase 2 del stack: una app en **Flutter** para que el staff gestione reservas/inventario desde el celular, consumiendo la misma base de datos vía una API a construir sobre este mismo backend.
