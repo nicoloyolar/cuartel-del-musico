@@ -1,0 +1,97 @@
+// Cuartel del Músico — esquema de datos
+// Cubre: staff (auth), bandas/clientes, reservas de sala, inventario de equipos,
+// cobros por arriendo, y la configuración del canal de streaming público.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  OPERADOR
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(OPERADOR)
+  createdAt    DateTime @default(now())
+}
+
+model Banda {
+  id        String    @id @default(cuid())
+  nombre    String
+  contacto  String?
+  telefono  String?
+  email     String?
+  instagram String?
+  notas     String?
+  createdAt DateTime  @default(now())
+  reservas  Reserva[]
+}
+
+enum EstadoReserva {
+  CONFIRMADA
+  CANCELADA
+  COMPLETADA
+}
+
+model Reserva {
+  id               String        @id @default(cuid())
+  bandaId          String
+  banda            Banda         @relation(fields: [bandaId], references: [id], onDelete: Cascade)
+  inicio           DateTime
+  fin              DateTime
+  estado           EstadoReserva @default(CONFIRMADA)
+  transmitirEnVivo Boolean       @default(true)
+  precio           Float?
+  notas            String?
+  createdAt        DateTime      @default(now())
+  cobros           Cobro[]
+
+  @@index([inicio])
+}
+
+enum EstadoEquipo {
+  DISPONIBLE
+  PRESTADO
+  MANTENCION
+}
+
+model Equipo {
+  id         String       @id @default(cuid())
+  nombre     String
+  categoria  String?
+  estado     EstadoEquipo @default(DISPONIBLE)
+  notas      String?
+  createdAt  DateTime     @default(now())
+}
+
+model Cobro {
+  id        String   @id @default(cuid())
+  reservaId String
+  reserva   Reserva  @relation(fields: [reservaId], references: [id], onDelete: Cascade)
+  monto     Float
+  metodo    String?
+  pagado    Boolean  @default(false)
+  fecha     DateTime @default(now())
+  notas     String?
+}
+
+// Configuración única (fila con id=1) que controla qué se muestra en el
+// sitio público: una lista de reproducción de YouTube (fase 1) o el canal
+// en vivo (fase 2), sin necesidad de tocar código.
+model StreamConfig {
+  id        Int      @id @default(1)
+  modo      String   @default("playlist") // "playlist" | "live"
+  youtubeId String? // ID de playlist o de video en vivo
+  titulo    String?
+  updatedAt DateTime @updatedAt
+}
