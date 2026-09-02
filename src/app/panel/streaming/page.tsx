@@ -1,73 +1,51 @@
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { resolverEstadoStream } from "@/lib/stream";
 import { StreamPlayer } from "@/components/StreamPlayer";
-import { guardarStreamConfig } from "./actions";
+import { StreamingSubNav } from "@/components/panel/StreamingSubNav";
+import { StreamingForm } from "./StreamingForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function StreamingConfigPage() {
-  const config = await prisma.streamConfig.findUnique({ where: { id: 1 } });
+  const [config, estado, session] = await Promise.all([
+    prisma.streamConfig.findUnique({ where: { id: 1 } }),
+    resolverEstadoStream(),
+    auth(),
+  ]);
 
-  return (
-    <div className="flex flex-col gap-8">
+  const contenido = (
+    <>
       <h1 className="text-2xl font-bold tracking-tight">Configuración del streaming</h1>
       <p className="max-w-2xl text-sm text-neutral-400">
         Mientras se arma la transmisión en vivo desde la sala, deja el modo en{" "}
-        <strong>Lista de reproducción</strong> y pega ahí el ID de una playlist de
-        YouTube con sesiones grabadas. Cuando esté lista la señal en vivo, cambia a{" "}
-        <strong>En vivo</strong> y pega el ID del video/transmisión activa de YouTube.
+        <strong>Canal</strong>: reproduce en orden el contenido cargado en /panel/canal,
+        sincronizado para que todos los visitantes vean el mismo punto. Cuando esté lista la señal
+        en vivo, cambia a <strong>En vivo</strong> y pega el link o ID del video/transmisión activa
+        de YouTube.
       </p>
 
-      <form
-        action={guardarStreamConfig}
-        className="flex max-w-md flex-col gap-4 rounded-lg border border-neutral-800 bg-neutral-900 p-4"
-      >
-        <div className="flex flex-col gap-1">
-          <label className="text-sm text-neutral-300">Modo</label>
-          <select
-            name="modo"
-            defaultValue={config?.modo ?? "playlist"}
-            className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-          >
-            <option value="playlist">Lista de reproducción (YouTube)</option>
-            <option value="live">En vivo (YouTube)</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-sm text-neutral-300">
-            ID de YouTube (playlist o video)
-          </label>
-          <input
-            name="youtubeId"
-            defaultValue={config?.youtubeId ?? ""}
-            placeholder="ej: PLxxxxxxxxxxxxxxxx o dQw4w9WgXcQ"
-            className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-          />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-sm text-neutral-300">Título (opcional)</label>
-          <input
-            name="titulo"
-            defaultValue={config?.titulo ?? ""}
-            className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="rounded-md bg-white px-3 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-200"
-        >
-          Guardar
-        </button>
-      </form>
+      <StreamingForm config={config} />
 
       <div className="max-w-2xl">
         <h2 className="mb-2 text-sm font-semibold text-neutral-400">
           Vista previa (lo que ve el público ahora mismo)
         </h2>
-        <StreamPlayer config={config} />
+        <StreamPlayer estado={estado} />
       </div>
-    </div>
+    </>
   );
+
+  // Sin sesión no hay barra lateral (ver panel/layout.tsx), así que esta
+  // página se hace cargo de su propio padding y de una mini-nav.
+  if (!session) {
+    return (
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-8">
+        <StreamingSubNav />
+        {contenido}
+      </div>
+    );
+  }
+
+  return <div className="flex flex-col gap-8">{contenido}</div>;
 }

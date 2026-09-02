@@ -8,6 +8,8 @@ const NAV = [
   { href: "/panel/equipos", label: "Equipos" },
   { href: "/panel/cobros", label: "Cobros" },
   { href: "/panel/streaming", label: "Streaming" },
+  { href: "/panel/canal", label: "Canal (Radio-TV)" },
+  { href: "/panel/sesiones", label: "Sesiones (Explorar)" },
 ];
 
 export default async function PanelLayout({
@@ -17,7 +19,9 @@ export default async function PanelLayout({
 }) {
   const session = await auth();
 
-  // La página de login no lleva la barra de navegación del staff.
+  // La página de login, y por ahora /panel/streaming y /panel/canal (ver
+  // proxy.ts), no llevan la barra de navegación del staff — cada una se
+  // encarga de su propio padding.
   if (!session) {
     return <div className="flex min-h-screen flex-1 flex-col">{children}</div>;
   }

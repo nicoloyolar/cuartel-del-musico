@@ -86,12 +86,46 @@ model Cobro {
 }
 
 // Configuración única (fila con id=1) que controla qué se muestra en el
-// sitio público: una lista de reproducción de YouTube (fase 1) o el canal
-// en vivo (fase 2), sin necesidad de tocar código.
+// sitio público: el canal simulado armado con `CanalItem` (fase 1) o una
+// señal en vivo real de YouTube (fase 2), sin necesidad de tocar código.
 model StreamConfig {
   id        Int      @id @default(1)
   modo      String   @default("playlist") // "playlist" | "live"
-  youtubeId String? // ID de playlist o de video en vivo
+  youtubeId String? // solo se usa en modo "live": ID del video/transmisión en vivo
   titulo    String?
   updatedAt DateTime @updatedAt
+}
+
+// Lista de reproducción del "canal" que se ve en la home mientras no hay
+// streaming en vivo real. A diferencia de un embed de playlist de YouTube
+// (que cada visitante arranca desde cero, todos ven algo distinto según
+// cuándo entraron), esto simula un canal de TV/radio real: se calcula por
+// reloj de servidor en qué item + segundo debería estar "sonando ahora" y
+// todos los visitantes ven ese mismo punto — igual que Pluto TV o un canal
+// de streaming lineal armado sobre contenido grabado. Ver `src/lib/canal.ts`.
+// Editable desde /panel/canal.
+model CanalItem {
+  id               String   @id @default(cuid())
+  titulo           String
+  youtubeId        String
+  duracionSegundos Int      @default(240)
+  orden            Int      @default(0)
+  createdAt        DateTime @default(now())
+
+  @@index([orden])
+}
+
+// Catálogo "modo Netflix": sesiones grabadas de bandas de la escena de
+// Concepción para que el público explore y elija qué ver, aparte del
+// canal continuo ("radio-tv") de la home. Editable desde /panel/sesiones.
+model Sesion {
+  id          String   @id @default(cuid())
+  bandaNombre String
+  titulo      String
+  youtubeId   String
+  descripcion String?
+  orden       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([orden])
 }

@@ -67,6 +67,67 @@ async function main() {
     },
   });
 
+  // --- Canal simulado (radio-tv) de la home: mismas 3 sesiones reales, en loop ---
+  // OJO: duracionSegundos es un placeholder (4 min parejo) para que el canal
+  // arranque con algo — ajustar a la duración real de cada video desde
+  // /panel/canal para que la sincronía entre visitantes sea exacta.
+  const canalItems = [
+    { id: "canal-krohma", titulo: "Krohma — Onírica", youtubeId: "lAkaYNOuYj4", duracionSegundos: 240, orden: 1 },
+    {
+      id: "canal-pusfecal",
+      titulo: "Pusfecal — Sesión en vivo en Cuartel del Músico",
+      youtubeId: "gztJwMEpySw",
+      duracionSegundos: 240,
+      orden: 2,
+    },
+    {
+      id: "canal-cherry-skulls",
+      titulo: "Cherry Skulls — Shadows of the Past",
+      youtubeId: "PEIkYv0ay18",
+      duracionSegundos: 240,
+      orden: 3,
+    },
+  ];
+  for (const item of canalItems) {
+    await prisma.canalItem.upsert({
+      where: { id: item.id },
+      update: {},
+      create: item,
+    });
+  }
+
+  // --- Catálogo "modo Netflix": sesiones reales grabadas en la sala ---
+  const sesiones = [
+    {
+      id: "sesion-krohma",
+      bandaNombre: "Krohma",
+      titulo: "Onírica",
+      youtubeId: "lAkaYNOuYj4",
+      orden: 1,
+    },
+    {
+      id: "sesion-pusfecal",
+      bandaNombre: "Pusfecal",
+      titulo: "Sesión en vivo en Cuartel del Músico",
+      youtubeId: "gztJwMEpySw",
+      orden: 2,
+    },
+    {
+      id: "sesion-cherry-skulls",
+      bandaNombre: "Cherry Skulls",
+      titulo: "Shadows of the Past (9 años Cuartel del Músico)",
+      youtubeId: "PEIkYv0ay18",
+      orden: 3,
+    },
+  ];
+  for (const sesion of sesiones) {
+    await prisma.sesion.upsert({
+      where: { id: sesion.id },
+      update: {},
+      create: sesion,
+    });
+  }
+
   // --- Equipos de ejemplo ---
   // SQLite no soporta skipDuplicates en createMany, así que usamos upsert.
   const equipos = [
