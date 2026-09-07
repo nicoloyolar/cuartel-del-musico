@@ -12,6 +12,7 @@ type Sesion = {
 
 export function Catalogo({ sesiones }: { sesiones: Sesion[] }) {
   const [activaId, setActivaId] = useState(sesiones[0]?.id);
+  const [filtroBanda, setFiltroBanda] = useState<string | null>(null);
   const activa = sesiones.find((s) => s.id === activaId) ?? sesiones[0];
 
   if (!activa) {
@@ -21,6 +22,13 @@ export function Catalogo({ sesiones }: { sesiones: Sesion[] }) {
       </p>
     );
   }
+
+  // Orden de aparición: la primera vez que aparece cada banda en la lista
+  // (ya viene ordenada por `orden` desde /panel/sesiones).
+  const bandas = [...new Set(sesiones.map((s) => s.bandaNombre))];
+  const sesionesFiltradas = filtroBanda
+    ? sesiones.filter((s) => s.bandaNombre === filtroBanda)
+    : sesiones;
 
   return (
     <div className="flex flex-col gap-10">
@@ -53,8 +61,37 @@ export function Catalogo({ sesiones }: { sesiones: Sesion[] }) {
           <div className="h-px flex-1 bg-ink-border" />
         </div>
 
+        {/* Filtro por banda — solo se muestra si hay más de una banda. */}
+        {bandas.length > 1 && (
+          <div className="mb-5 flex flex-wrap gap-2">
+            <button
+              onClick={() => setFiltroBanda(null)}
+              className={`rounded-full border px-3 py-1 font-display text-xs font-medium tracking-wide uppercase transition-colors ${
+                !filtroBanda
+                  ? "border-accent bg-accent/10 text-accent-soft"
+                  : "border-ink-border text-muted hover:border-ink-border-soft hover:text-neutral-100"
+              }`}
+            >
+              Todas
+            </button>
+            {bandas.map((banda) => (
+              <button
+                key={banda}
+                onClick={() => setFiltroBanda(banda)}
+                className={`rounded-full border px-3 py-1 font-display text-xs font-medium tracking-wide uppercase transition-colors ${
+                  filtroBanda === banda
+                    ? "border-accent bg-accent/10 text-accent-soft"
+                    : "border-ink-border text-muted hover:border-ink-border-soft hover:text-neutral-100"
+                }`}
+              >
+                {banda}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {sesiones.map((s) => {
+          {sesionesFiltradas.map((s) => {
             const seleccionada = s.id === activa.id;
             return (
               <button
