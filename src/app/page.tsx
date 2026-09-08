@@ -14,16 +14,31 @@ export default async function HomePage() {
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-3 px-6 py-6 sm:px-10">
       <header className="flex items-center justify-between py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-accent to-orange-500">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M4 20V6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4Z"
-                stroke="#0a0908"
-                strokeWidth="2"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          {/* Isotipo oficial de la marca (mismo que el sitio informativo,
+              tema cdm-child) — círculo + marcas cardinales + nota musical. */}
+          <svg
+            viewBox="0 0 48 48"
+            fill="none"
+            className="h-9 w-9 shrink-0 text-accent"
+            aria-hidden="true"
+          >
+            <circle cx="24" cy="24" r="15" stroke="currentColor" strokeWidth="2" />
+            <path
+              d="M24 3v8M24 37v8M3 24h8M37 24h8"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M20 30V17l8-2v11"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="18" cy="30.5" r="2.6" fill="currentColor" />
+            <circle cx="26" cy="28.3" r="2.6" fill="currentColor" />
+          </svg>
           <h1 className="font-display text-lg font-semibold tracking-widest text-neutral-100 uppercase">
             Cuartel del Músico
           </h1>
@@ -87,7 +102,7 @@ export default async function HomePage() {
                   {tocandoAhora && (
                     <>
                       <div className="absolute inset-0 rounded-xl border border-ink-border-soft" />
-                      <div className="absolute inset-x-0 top-0 h-0.5 rounded-t-xl bg-gradient-to-r from-accent to-orange-400" />
+                      <div className="absolute inset-x-0 top-0 h-0.5 rounded-t-xl bg-gradient-to-r from-accent to-red-900" />
                     </>
                   )}
 

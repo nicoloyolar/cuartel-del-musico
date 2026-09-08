@@ -67,7 +67,7 @@ export default async function AgendaPage() {
                       className="relative flex items-center justify-between gap-4 px-5 py-4"
                     >
                       {tocandoAhora && (
-                        <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-b from-accent to-orange-400" />
+                        <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-b from-accent to-red-900" />
                       )}
                       <div className="flex items-center gap-3">
                         <span className="font-display text-sm font-semibold text-neutral-100">

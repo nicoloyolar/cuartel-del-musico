@@ -11,13 +11,15 @@
   --font-sans: var(--font-manrope);
   --font-display: var(--font-oswald);
 
-  /* Identidad "on air" del sitio público */
-  --color-ink: #0a0908;
-  --color-ink-card: #141110;
+  /* Identidad "on air" del sitio público — mismos valores que la
+     identidad oficial de la marca (ver landing.css del sitio WordPress
+     hermano, tema cdm-child): --cdm-ink, --cdm-card, --cdm-red-2. */
+  --color-ink: #0c0c0e;
+  --color-ink-card: #1a1719;
   --color-ink-border: #221c1a;
   --color-ink-border-soft: #291f1d;
-  --color-accent: #e11d2e;
-  --color-accent-soft: #ff6b60;
+  --color-accent: #c62828;
+  --color-accent-soft: #e2756d;
   --color-amber: #f2a900;
   --color-muted: #a89f9a;
   --color-muted-2: #77706c;
