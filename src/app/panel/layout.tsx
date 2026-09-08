@@ -28,8 +28,8 @@ export default async function PanelLayout({
 
   return (
     <div className="flex min-h-screen flex-1 flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col gap-1 border-b border-neutral-800 bg-neutral-900 p-4 md:w-56 md:border-b-0 md:border-r">
-        <p className="mb-4 px-2 text-sm font-semibold text-neutral-400">
+      <aside className="flex shrink-0 flex-col gap-1 border-b border-ink-border bg-ink-card p-4 md:w-56 md:border-b-0 md:border-r">
+        <p className="mb-4 px-2 font-display text-xs font-semibold tracking-widest text-muted uppercase">
           Cuartel del Músico
         </p>
         <nav className="flex flex-1 flex-col gap-1">
@@ -37,7 +37,7 @@ export default async function PanelLayout({
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-md px-2 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
+              className="rounded-md px-2 py-1.5 text-sm text-neutral-300 hover:bg-ink-border hover:text-neutral-100"
             >
               {item.label}
             </Link>
@@ -51,7 +51,7 @@ export default async function PanelLayout({
         >
           <button
             type="submit"
-            className="mt-4 w-full rounded-md px-2 py-1.5 text-left text-sm text-neutral-400 hover:bg-neutral-800 hover:text-white"
+            className="mt-4 w-full rounded-md px-2 py-1.5 text-left text-sm text-muted hover:bg-ink-border hover:text-neutral-100"
           >
             Cerrar sesión
           </button>

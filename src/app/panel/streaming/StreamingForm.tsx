@@ -21,7 +21,7 @@ export function StreamingForm({ config }: Props) {
   return (
     <form
       action={formAction}
-      className="flex max-w-md flex-col gap-4 rounded-lg border border-neutral-800 bg-neutral-900 p-4"
+      className="flex max-w-md flex-col gap-4 rounded-lg border border-ink-border bg-ink-card p-4"
     >
       <div className="flex flex-col gap-1">
         <label className="text-sm text-neutral-300">Modo</label>
@@ -29,7 +29,7 @@ export function StreamingForm({ config }: Props) {
           name="modo"
           value={modo}
           onChange={(e) => setModo(e.target.value)}
-          className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded-md border border-ink-border bg-ink px-3 py-2 text-sm text-neutral-100"
         >
           <option value="playlist">Canal (contenido grabado)</option>
           <option value="live">En vivo (YouTube)</option>
@@ -37,7 +37,7 @@ export function StreamingForm({ config }: Props) {
       </div>
 
       {modo === "playlist" ? (
-        <p className="rounded-md border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-neutral-400">
+        <p className="rounded-md border border-ink-border bg-ink px-3 py-2 text-sm text-muted">
           El contenido y el orden del canal se administran desde{" "}
           <Link href="/panel/canal" className="underline underline-offset-4 hover:text-neutral-200">
             /panel/canal
@@ -52,9 +52,9 @@ export function StreamingForm({ config }: Props) {
             name="youtubeId"
             defaultValue={config?.modo === "live" ? (config?.youtubeId ?? "") : ""}
             placeholder="https://youtube.com/watch?v=xxxxx o dQw4w9WgXcQ"
-            className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+            className="rounded-md border border-ink-border bg-ink px-3 py-2 text-sm text-neutral-100"
           />
-          <p className="text-xs text-neutral-500">Acepta el link completo de YouTube o el ID pelado.</p>
+          <p className="text-xs text-muted-2">Acepta el link completo de YouTube o el ID pelado.</p>
         </div>
       )}
 
@@ -63,7 +63,7 @@ export function StreamingForm({ config }: Props) {
         <input
           name="titulo"
           defaultValue={config?.titulo ?? ""}
-          className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded-md border border-ink-border bg-ink px-3 py-2 text-sm text-neutral-100"
         />
       </div>
 
@@ -81,7 +81,7 @@ export function StreamingForm({ config }: Props) {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-white px-3 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-200 disabled:opacity-50"
+        className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-neutral-50 transition-colors hover:bg-accent-soft disabled:opacity-50"
       >
         {pending ? "Guardando..." : "Guardar"}
       </button>

@@ -17,8 +17,10 @@ export default async function StreamingConfigPage() {
 
   const contenido = (
     <>
-      <h1 className="text-2xl font-bold tracking-tight">Configuración del streaming</h1>
-      <p className="max-w-2xl text-sm text-neutral-400">
+      <h1 className="font-display text-2xl font-semibold tracking-tight text-neutral-100">
+        Configuración del streaming
+      </h1>
+      <p className="max-w-2xl text-sm text-muted">
         Mientras se arma la transmisión en vivo desde la sala, deja el modo en{" "}
         <strong>Canal</strong>: reproduce en orden el contenido cargado en /panel/canal,
         sincronizado para que todos los visitantes vean el mismo punto. Cuando esté lista la señal
@@ -29,7 +31,7 @@ export default async function StreamingConfigPage() {
       {session ? (
         <StreamingForm config={config} />
       ) : (
-        <div className="max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-4 text-sm text-neutral-400">
+        <div className="max-w-md rounded-lg border border-ink-border bg-ink-card p-4 text-sm text-muted">
           <p>
             Modo actual: <strong>{config?.modo === "live" ? "En vivo" : "Canal"}</strong>
             {config?.titulo ? ` — ${config.titulo}` : ""}
@@ -47,7 +49,7 @@ export default async function StreamingConfigPage() {
       )}
 
       <div className="max-w-2xl">
-        <h2 className="mb-2 text-sm font-semibold text-neutral-400">
+        <h2 className="mb-2 font-display text-xs font-semibold tracking-widest text-muted uppercase">
           Vista previa (lo que ve el público ahora mismo)
         </h2>
         <StreamPlayer estado={estado} />

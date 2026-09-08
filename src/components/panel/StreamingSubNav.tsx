@@ -8,14 +8,14 @@ import Link from "next/link";
  */
 export function StreamingSubNav() {
   return (
-    <nav className="flex items-center gap-4 border-b border-neutral-800 pb-4 text-sm">
-      <Link href="/panel/streaming" className="text-neutral-400 hover:text-white">
+    <nav className="flex items-center gap-4 border-b border-ink-border pb-4 text-sm">
+      <Link href="/panel/streaming" className="text-muted hover:text-neutral-100">
         Streaming
       </Link>
-      <Link href="/panel/canal" className="text-neutral-400 hover:text-white">
+      <Link href="/panel/canal" className="text-muted hover:text-neutral-100">
         Canal (Radio-TV)
       </Link>
-      <Link href="/" className="ml-auto text-neutral-500 hover:text-white">
+      <Link href="/" className="ml-auto text-muted-2 hover:text-neutral-100">
         ← Volver al sitio
       </Link>
     </nav>

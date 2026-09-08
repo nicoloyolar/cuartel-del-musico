@@ -32,15 +32,17 @@ export default async function LoginPage({
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-6 px-6 py-10">
       <div>
-        <h1 className="text-xl font-bold">Panel — Cuartel del Músico</h1>
-        <p className="text-sm text-neutral-400">Acceso solo para staff</p>
+        <h1 className="font-display text-xl font-semibold tracking-tight text-neutral-100">
+          Panel — Cuartel del Músico
+        </h1>
+        <p className="text-sm text-muted">Acceso solo para staff</p>
       </div>
 
       <form action={login} className="flex flex-col gap-4">
         <input type="hidden" name="callbackUrl" value={callbackUrl ?? "/panel"} />
 
         {error && (
-          <p className="rounded-md bg-red-950 px-3 py-2 text-sm text-red-300">
+          <p className="rounded-md border border-red-900 bg-red-950/50 px-3 py-2 text-sm text-red-300">
             Correo o contraseña incorrectos.
           </p>
         )}
@@ -54,7 +56,7 @@ export default async function LoginPage({
             name="email"
             type="email"
             required
-            className="rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+            className="rounded-md border border-ink-border bg-ink px-3 py-2 text-sm text-neutral-100 outline-none focus:border-ink-border-soft"
           />
         </div>
 
@@ -67,13 +69,13 @@ export default async function LoginPage({
             name="password"
             type="password"
             required
-            className="rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+            className="rounded-md border border-ink-border bg-ink px-3 py-2 text-sm text-neutral-100 outline-none focus:border-ink-border-soft"
           />
         </div>
 
         <button
           type="submit"
-          className="rounded-md bg-white px-3 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-200"
+          className="rounded-md bg-accent px-3 py-2 text-sm font-semibold text-neutral-50 transition-colors hover:bg-accent-soft"
         >
           Entrar
         </button>

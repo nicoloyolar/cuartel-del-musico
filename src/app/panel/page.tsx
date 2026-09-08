@@ -28,16 +28,18 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+      <h1 className="font-display text-2xl font-semibold tracking-tight text-neutral-100">
+        Dashboard
+      </h1>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {cards.map((c) => (
           <Link
             key={c.label}
             href={c.href}
-            className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 hover:border-neutral-600"
+            className="rounded-lg border border-ink-border bg-ink-card p-4 hover:border-ink-border-soft"
           >
-            <p className="text-3xl font-bold">{c.value}</p>
-            <p className="text-sm text-neutral-400">{c.label}</p>
+            <p className="font-display text-3xl font-semibold text-neutral-100">{c.value}</p>
+            <p className="text-sm text-muted">{c.label}</p>
           </Link>
         ))}
       </div>

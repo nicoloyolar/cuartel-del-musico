@@ -15,16 +15,18 @@ export default async function ReservasPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-2xl font-bold tracking-tight">Reservas de sala</h1>
+      <h1 className="font-display text-2xl font-semibold tracking-tight text-neutral-100">
+        Reservas de sala
+      </h1>
 
       <form
         action={crearReserva}
-        className="grid grid-cols-1 gap-3 rounded-lg border border-neutral-800 bg-neutral-900 p-4 md:grid-cols-3"
+        className="grid grid-cols-1 gap-3 rounded-lg border border-ink-border bg-ink-card p-4 md:grid-cols-3"
       >
         <select
           name="bandaId"
           required
-          className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded-md border border-ink-border bg-ink px-3 py-2 text-sm text-neutral-100"
         >
           <option value="">Selecciona una banda *</option>
           {bandas.map((b) => (
@@ -37,25 +39,25 @@ export default async function ReservasPage() {
           type="datetime-local"
           name="inicio"
           required
-          className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded-md border border-ink-border bg-ink px-3 py-2 text-sm text-neutral-100"
         />
         <input
           type="datetime-local"
           name="fin"
           required
-          className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded-md border border-ink-border bg-ink px-3 py-2 text-sm text-neutral-100"
         />
         <input
           type="number"
           name="precio"
           placeholder="Precio (CLP)"
-          className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded-md border border-ink-border bg-ink px-3 py-2 text-sm text-neutral-100"
         />
         <input
           type="text"
           name="notas"
           placeholder="Notas"
-          className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm md:col-span-2"
+          className="rounded-md border border-ink-border bg-ink px-3 py-2 text-sm text-neutral-100 md:col-span-2"
         />
         <label className="flex items-center gap-2 text-sm text-neutral-300">
           <input type="checkbox" name="transmitirEnVivo" defaultChecked />
@@ -63,7 +65,7 @@ export default async function ReservasPage() {
         </label>
         <button
           type="submit"
-          className="col-span-full rounded-md bg-white px-3 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-200 md:w-fit"
+          className="col-span-full rounded-md bg-accent px-3 py-2 text-sm font-semibold text-neutral-50 transition-colors hover:bg-accent-soft md:w-fit"
         >
           Crear reserva
         </button>
@@ -75,11 +77,11 @@ export default async function ReservasPage() {
         </p>
       )}
 
-      <ul className="divide-y divide-neutral-800 rounded-lg border border-neutral-800">
+      <ul className="divide-y divide-ink-border rounded-lg border border-ink-border">
         {reservas.map((r) => (
           <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
             <div>
-              <p className="font-medium">
+              <p className="font-medium text-neutral-100">
                 {r.banda.nombre}{" "}
                 <span
                   className={`ml-2 rounded px-1.5 py-0.5 text-xs ${estadoEstilo(r.estado)}`}
@@ -92,7 +94,7 @@ export default async function ReservasPage() {
                   </span>
                 )}
               </p>
-              <p className="text-sm text-neutral-400">
+              <p className="text-sm text-muted">
                 {formatFecha(r.inicio)} – {formatHora(r.fin)}
                 {r.precio ? ` · $${r.precio.toLocaleString("es-CL")}` : ""}
               </p>
@@ -110,7 +112,7 @@ export default async function ReservasPage() {
                   await eliminarReserva(r.id);
                 }}
               >
-                <button type="submit" className="text-sm text-neutral-500 hover:text-red-400">
+                <button type="submit" className="text-sm text-muted-2 hover:text-red-400">
                   Eliminar
                 </button>
               </form>
@@ -118,7 +120,7 @@ export default async function ReservasPage() {
           </li>
         ))}
         {reservas.length === 0 && (
-          <li className="px-4 py-6 text-center text-neutral-400">
+          <li className="px-4 py-6 text-center text-muted">
             No hay reservas registradas.
           </li>
         )}
@@ -147,7 +149,7 @@ function EstadoButton({
     >
       <button
         type="submit"
-        className={`text-sm ${danger ? "text-red-400 hover:text-red-300" : "text-neutral-300 hover:text-white"}`}
+        className={`text-sm ${danger ? "text-red-400 hover:text-red-300" : "text-neutral-300 hover:text-neutral-100"}`}
       >
         {label}
       </button>
@@ -160,11 +162,11 @@ function estadoEstilo(estado: string) {
     case "CONFIRMADA":
       return "bg-emerald-900 text-emerald-200";
     case "CANCELADA":
-      return "bg-neutral-800 text-neutral-400";
+      return "bg-ink-border text-muted";
     case "COMPLETADA":
       return "bg-blue-900 text-blue-200";
     default:
-      return "bg-neutral-800 text-neutral-300";
+      return "bg-ink-border text-neutral-300";
   }
 }
 

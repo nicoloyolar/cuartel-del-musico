@@ -15,7 +15,7 @@ export function EstadoSelect({ id, estado }: { id: string; estado: EstadoEquipo 
   return (
     <select
       defaultValue={estado}
-      className={`rounded-md border border-neutral-700 bg-neutral-950 px-2 py-1 text-xs ${COLOR[estado]}`}
+      className={`rounded-md border border-ink-border bg-ink px-2 py-1 text-xs ${COLOR[estado]}`}
       onChange={(e) => cambiarEstadoEquipo(id, e.target.value as EstadoEquipo)}
     >
       {ESTADOS.map((e) => (
