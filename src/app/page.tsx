@@ -12,7 +12,7 @@ export default async function HomePage() {
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-3 px-6 py-6 sm:px-10">
-      <header className="flex items-center justify-between py-4">
+      <header className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           {/* Isotipo oficial de la marca (mismo que el sitio informativo,
               tema cdm-child) — círculo + marcas cardinales + nota musical. */}
@@ -39,11 +39,11 @@ export default async function HomePage() {
             <circle cx="18" cy="30.5" r="2.6" fill="currentColor" />
             <circle cx="26" cy="28.3" r="2.6" fill="currentColor" />
           </svg>
-          <h1 className="font-display text-lg font-semibold tracking-widest text-neutral-100 uppercase">
+          <h1 className="font-display text-base font-semibold tracking-wide text-neutral-100 uppercase whitespace-nowrap sm:text-lg sm:tracking-widest">
             Cuartel del Músico
           </h1>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-5 sm:gap-6">
           <Link
             href="/explorar"
             className="font-display text-xs font-semibold tracking-widest text-muted uppercase hover:text-neutral-100"

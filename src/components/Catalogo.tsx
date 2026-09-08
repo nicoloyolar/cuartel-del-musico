@@ -23,9 +23,12 @@ export function Catalogo({ sesiones }: { sesiones: Sesion[] }) {
     );
   }
 
-  // Orden de aparición: la primera vez que aparece cada banda en la lista
-  // (ya viene ordenada por `orden` desde /panel/sesiones).
-  const bandas = [...new Set(sesiones.map((s) => s.bandaNombre))];
+  // Orden alfabético: con pocas bandas el orden de aparición se leía bien,
+  // pero con el catálogo completo (70+) hace falta poder ubicar una banda
+  // puntual rápido — alfabético es lo que se espera de un desplegable así.
+  const bandas = [...new Set(sesiones.map((s) => s.bandaNombre))].sort((a, b) =>
+    a.localeCompare(b, "es")
+  );
   const sesionesFiltradas = filtroBanda
     ? sesiones.filter((s) => s.bandaNombre === filtroBanda)
     : sesiones;
@@ -49,7 +52,7 @@ export function Catalogo({ sesiones }: { sesiones: Sesion[] }) {
           <iframe
             key={activa.id}
             className="h-full w-full"
-            src={`https://www.youtube.com/embed/${activa.youtubeId}?autoplay=1`}
+            src={`https://www.youtube.com/embed/${activa.youtubeId}?autoplay=1&mute=1&modestbranding=1&rel=0&iv_load_policy=3&cc_load_policy=0`}
             title={`${activa.bandaNombre} — ${activa.titulo}`}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -73,32 +76,31 @@ export function Catalogo({ sesiones }: { sesiones: Sesion[] }) {
           <div className="h-px flex-1 bg-ink-border" />
         </div>
 
-        {/* Filtro por banda — solo se muestra si hay más de una banda. */}
+        {/* Filtro por banda — desplegable en vez de pastillas: con el
+            catálogo completo (70+ bandas) una fila de chips se desborda en
+            varias líneas y se ve desprolijo; un select escala sin problema
+            y es más fácil de ubicar una banda puntual (alfabético). */}
         {bandas.length > 1 && (
-          <div className="mb-5 flex flex-wrap gap-2">
-            <button
-              onClick={() => elegirFiltro(null)}
-              className={`rounded-full border px-3 py-1 font-display text-xs font-medium tracking-wide uppercase transition-colors ${
-                !filtroBanda
-                  ? "border-accent bg-accent/10 text-accent-soft"
-                  : "border-ink-border text-muted hover:border-ink-border-soft hover:text-neutral-100"
-              }`}
+          <div className="mb-5 flex items-center gap-3">
+            <label
+              htmlFor="filtro-banda"
+              className="font-display text-xs font-semibold tracking-widest text-muted uppercase"
             >
-              Todas
-            </button>
-            {bandas.map((banda) => (
-              <button
-                key={banda}
-                onClick={() => elegirFiltro(banda)}
-                className={`rounded-full border px-3 py-1 font-display text-xs font-medium tracking-wide uppercase transition-colors ${
-                  filtroBanda === banda
-                    ? "border-accent bg-accent/10 text-accent-soft"
-                    : "border-ink-border text-muted hover:border-ink-border-soft hover:text-neutral-100"
-                }`}
-              >
-                {banda}
-              </button>
-            ))}
+              Banda
+            </label>
+            <select
+              id="filtro-banda"
+              value={filtroBanda ?? ""}
+              onChange={(e) => elegirFiltro(e.target.value || null)}
+              className="rounded-md border border-ink-border bg-ink-card px-3 py-1.5 font-display text-xs font-medium tracking-wide text-neutral-100 uppercase outline-none focus:border-accent"
+            >
+              <option value="">Todas ({sesiones.length})</option>
+              {bandas.map((banda) => (
+                <option key={banda} value={banda}>
+                  {banda}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 

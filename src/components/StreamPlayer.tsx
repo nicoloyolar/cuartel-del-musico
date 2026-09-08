@@ -25,9 +25,15 @@ export function StreamPlayer({ estado }: { estado: EstadoStream }) {
   }
 
   const esVivo = estado.tipo === "live";
+  // modestbranding/rel/iv_load_policy: reduce el chrome propio de YouTube
+  // (logo grande, sugeridos) para que se sienta canal propio, no un video
+  // embebido — sin sacar controls (ahí vive el botón de mute/volumen, que
+  // hace falta porque el autoplay va silenciado).
+  const paramsComunes =
+    "autoplay=1&mute=1&modestbranding=1&rel=0&iv_load_policy=3&cc_load_policy=0";
   const src = esVivo
-    ? `https://www.youtube.com/embed/${estado.youtubeId}?autoplay=1&mute=1`
-    : `https://www.youtube.com/embed/${estado.youtubeId}?autoplay=1&mute=1&start=${estado.startSegundos}`;
+    ? `https://www.youtube.com/embed/${estado.youtubeId}?${paramsComunes}`
+    : `https://www.youtube.com/embed/${estado.youtubeId}?${paramsComunes}&start=${estado.startSegundos}`;
   const titulo = esVivo ? (estado.titulo ?? "Cuartel del Músico — En Vivo") : estado.tituloItem;
 
   return (
@@ -58,9 +64,11 @@ export function StreamPlayer({ estado }: { estado: EstadoStream }) {
         </span>
       </div>
 
-      {/* tag de contenido */}
+      {/* tag de contenido — oculto en mobile: junto al badge de estado no
+          entran los dos en el ancho del video, y el de estado es el que
+          importa de verdad. */}
       {!esVivo && (
-        <div className="pointer-events-none absolute top-4 right-4 flex items-center gap-2 rounded-full border border-white/10 bg-ink/55 px-3.5 py-2 backdrop-blur-sm">
+        <div className="pointer-events-none absolute top-4 right-4 hidden items-center gap-2 rounded-full border border-white/10 bg-ink/55 px-3.5 py-2 backdrop-blur-sm sm:flex">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
             <path
               d="M9 18V5l12-2v13"
