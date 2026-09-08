@@ -30,6 +30,18 @@ export function Catalogo({ sesiones }: { sesiones: Sesion[] }) {
     ? sesiones.filter((s) => s.bandaNombre === filtroBanda)
     : sesiones;
 
+  // Si el video destacado no pertenece a la banda que se acaba de elegir,
+  // salta al primero de la lista filtrada — si no, el reproductor de
+  // arriba se queda mostrando algo de otra banda que ya no está en la
+  // grilla de abajo.
+  function elegirFiltro(banda: string | null) {
+    setFiltroBanda(banda);
+    const lista = banda ? sesiones.filter((s) => s.bandaNombre === banda) : sesiones;
+    if (!lista.some((s) => s.id === activaId)) {
+      setActivaId(lista[0]?.id);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-10">
       <div>
@@ -65,7 +77,7 @@ export function Catalogo({ sesiones }: { sesiones: Sesion[] }) {
         {bandas.length > 1 && (
           <div className="mb-5 flex flex-wrap gap-2">
             <button
-              onClick={() => setFiltroBanda(null)}
+              onClick={() => elegirFiltro(null)}
               className={`rounded-full border px-3 py-1 font-display text-xs font-medium tracking-wide uppercase transition-colors ${
                 !filtroBanda
                   ? "border-accent bg-accent/10 text-accent-soft"
@@ -77,7 +89,7 @@ export function Catalogo({ sesiones }: { sesiones: Sesion[] }) {
             {bandas.map((banda) => (
               <button
                 key={banda}
-                onClick={() => setFiltroBanda(banda)}
+                onClick={() => elegirFiltro(banda)}
                 className={`rounded-full border px-3 py-1 font-display text-xs font-medium tracking-wide uppercase transition-colors ${
                   filtroBanda === banda
                     ? "border-accent bg-accent/10 text-accent-soft"
