@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { extraerVideoId } from "@/lib/youtube";
 
@@ -10,7 +11,13 @@ function revalidarTodo() {
   revalidatePath("/");
 }
 
+// /panel/canal se ve sin login (ver proxy.ts), pero editar el canal sí
+// requiere sesión — cada acción se protege acá, no solo ocultando los
+// controles en la UI.
 export async function crearCanalItem(formData: FormData) {
+  const session = await auth();
+  if (!session) return;
+
   const titulo = (formData.get("titulo") as string)?.trim();
   const youtubeIdRaw = (formData.get("youtubeId") as string)?.trim();
   const youtubeId = youtubeIdRaw ? extraerVideoId(youtubeIdRaw) : null;
@@ -35,11 +42,17 @@ export async function crearCanalItem(formData: FormData) {
 }
 
 export async function eliminarCanalItem(id: string) {
+  const session = await auth();
+  if (!session) return;
+
   await prisma.canalItem.delete({ where: { id } });
   revalidarTodo();
 }
 
 export async function moverCanalItem(id: string, direccion: "arriba" | "abajo") {
+  const session = await auth();
+  if (!session) return;
+
   const items = await prisma.canalItem.findMany({ orderBy: { orden: "asc" } });
   const index = items.findIndex((i) => i.id === id);
   if (index === -1) return;

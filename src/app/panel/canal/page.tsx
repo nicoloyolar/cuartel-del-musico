@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { calcularPosicionActual } from "@/lib/canal";
@@ -27,51 +28,63 @@ export default async function CanalPage() {
         </p>
       </div>
 
-      <form
-        action={crearCanalItem}
-        className="grid grid-cols-1 gap-3 rounded-lg border border-neutral-800 bg-neutral-900 p-4 md:grid-cols-2"
-      >
-        <input
-          name="titulo"
-          placeholder="Título (ej: Krohma — Onírica) *"
-          required
-          className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm md:col-span-2"
-        />
-        <input
-          name="youtubeId"
-          placeholder="Link o ID de YouTube *"
-          required
-          className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm md:col-span-2"
-        />
-        <div className="flex items-center gap-2 md:col-span-2">
-          <label className="text-sm text-neutral-400">Duración:</label>
-          <input
-            name="minutos"
-            type="number"
-            min={0}
-            placeholder="min"
-            required
-            className="w-20 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-          />
-          <span className="text-neutral-500">:</span>
-          <input
-            name="segundos"
-            type="number"
-            min={0}
-            max={59}
-            placeholder="seg"
-            required
-            className="w-20 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
-          />
-          <span className="text-xs text-neutral-500">(duración real del video, para la sincronía)</span>
-        </div>
-        <button
-          type="submit"
-          className="col-span-full rounded-md bg-white px-3 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-200 md:w-fit"
+      {session ? (
+        <form
+          action={crearCanalItem}
+          className="grid grid-cols-1 gap-3 rounded-lg border border-neutral-800 bg-neutral-900 p-4 md:grid-cols-2"
         >
-          Agregar al canal
-        </button>
-      </form>
+          <input
+            name="titulo"
+            placeholder="Título (ej: Krohma — Onírica) *"
+            required
+            className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm md:col-span-2"
+          />
+          <input
+            name="youtubeId"
+            placeholder="Link o ID de YouTube *"
+            required
+            className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm md:col-span-2"
+          />
+          <div className="flex items-center gap-2 md:col-span-2">
+            <label className="text-sm text-neutral-400">Duración:</label>
+            <input
+              name="minutos"
+              type="number"
+              min={0}
+              placeholder="min"
+              required
+              className="w-20 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+            />
+            <span className="text-neutral-500">:</span>
+            <input
+              name="segundos"
+              type="number"
+              min={0}
+              max={59}
+              placeholder="seg"
+              required
+              className="w-20 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+            />
+            <span className="text-xs text-neutral-500">(duración real del video, para la sincronía)</span>
+          </div>
+          <button
+            type="submit"
+            className="col-span-full rounded-md bg-white px-3 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-200 md:w-fit"
+          >
+            Agregar al canal
+          </button>
+        </form>
+      ) : (
+        <p className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 text-sm text-neutral-400">
+          Estás viendo el canal sin iniciar sesión — se puede revisar pero no editar.{" "}
+          <Link
+            href="/panel/login?callbackUrl=/panel/canal"
+            className="underline underline-offset-4 hover:text-neutral-200"
+          >
+            Iniciar sesión para editar →
+          </Link>
+        </p>
+      )}
 
       <ul className="divide-y divide-neutral-800 rounded-lg border border-neutral-800">
         {items.map((item, index) => {
@@ -96,48 +109,50 @@ export default async function CanalPage() {
                   youtube.com/watch?v={item.youtubeId} · {formatDuracion(item.duracionSegundos)}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
-                <form
-                  action={async () => {
-                    "use server";
-                    await moverCanalItem(item.id, "arriba");
-                  }}
-                >
-                  <button
-                    type="submit"
-                    disabled={index === 0}
-                    className="text-sm text-neutral-500 hover:text-neutral-200 disabled:opacity-30"
-                    title="Mover arriba"
+              {session && (
+                <div className="flex items-center gap-3">
+                  <form
+                    action={async () => {
+                      "use server";
+                      await moverCanalItem(item.id, "arriba");
+                    }}
                   >
-                    ↑
-                  </button>
-                </form>
-                <form
-                  action={async () => {
-                    "use server";
-                    await moverCanalItem(item.id, "abajo");
-                  }}
-                >
-                  <button
-                    type="submit"
-                    disabled={index === items.length - 1}
-                    className="text-sm text-neutral-500 hover:text-neutral-200 disabled:opacity-30"
-                    title="Mover abajo"
+                    <button
+                      type="submit"
+                      disabled={index === 0}
+                      className="text-sm text-neutral-500 hover:text-neutral-200 disabled:opacity-30"
+                      title="Mover arriba"
+                    >
+                      ↑
+                    </button>
+                  </form>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await moverCanalItem(item.id, "abajo");
+                    }}
                   >
-                    ↓
-                  </button>
-                </form>
-                <form
-                  action={async () => {
-                    "use server";
-                    await eliminarCanalItem(item.id);
-                  }}
-                >
-                  <button type="submit" className="text-sm text-neutral-500 hover:text-red-400">
-                    Eliminar
-                  </button>
-                </form>
-              </div>
+                    <button
+                      type="submit"
+                      disabled={index === items.length - 1}
+                      className="text-sm text-neutral-500 hover:text-neutral-200 disabled:opacity-30"
+                      title="Mover abajo"
+                    >
+                      ↓
+                    </button>
+                  </form>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await eliminarCanalItem(item.id);
+                    }}
+                  >
+                    <button type="submit" className="text-sm text-neutral-500 hover:text-red-400">
+                      Eliminar
+                    </button>
+                  </form>
+                </div>
+              )}
             </li>
           );
         })}

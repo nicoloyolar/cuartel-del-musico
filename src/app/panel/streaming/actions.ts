@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { extraerVideoId } from "@/lib/youtube";
 
@@ -9,10 +10,17 @@ export type StreamActionState = {
   success?: boolean;
 };
 
+// /panel/streaming se ve sin login (ver proxy.ts), pero guardar la
+// configuración sí requiere sesión.
 export async function guardarStreamConfig(
   _prevState: StreamActionState,
   formData: FormData
 ): Promise<StreamActionState> {
+  const session = await auth();
+  if (!session) {
+    return { error: "Necesitás iniciar sesión para guardar cambios." };
+  }
+
   const modo = (formData.get("modo") as string) === "live" ? "live" : "playlist";
   const youtubeIdRaw = ((formData.get("youtubeId") as string) ?? "").trim();
   const titulo = ((formData.get("titulo") as string) ?? "").trim() || null;

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { resolverEstadoStream } from "@/lib/stream";
@@ -25,7 +26,25 @@ export default async function StreamingConfigPage() {
         de YouTube.
       </p>
 
-      <StreamingForm config={config} />
+      {session ? (
+        <StreamingForm config={config} />
+      ) : (
+        <div className="max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-4 text-sm text-neutral-400">
+          <p>
+            Modo actual: <strong>{config?.modo === "live" ? "En vivo" : "Canal"}</strong>
+            {config?.titulo ? ` — ${config.titulo}` : ""}
+          </p>
+          <p className="mt-2">
+            Estás viendo esto sin iniciar sesión — se puede revisar pero no editar.{" "}
+            <Link
+              href="/panel/login?callbackUrl=/panel/streaming"
+              className="underline underline-offset-4 hover:text-neutral-200"
+            >
+              Iniciar sesión para editar →
+            </Link>
+          </p>
+        </div>
+      )}
 
       <div className="max-w-2xl">
         <h2 className="mb-2 text-sm font-semibold text-neutral-400">
