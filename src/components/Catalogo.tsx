@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type Sesion = {
   id: string;
@@ -76,32 +76,17 @@ export function Catalogo({ sesiones }: { sesiones: Sesion[] }) {
           <div className="h-px flex-1 bg-ink-border" />
         </div>
 
-        {/* Filtro por banda — desplegable en vez de pastillas: con el
-            catálogo completo (70+ bandas) una fila de chips se desborda en
-            varias líneas y se ve desprolijo; un select escala sin problema
-            y es más fácil de ubicar una banda puntual (alfabético). */}
+        {/* Filtro por banda — buscador con desplegable en vez de pastillas:
+            con el catálogo completo (70+ bandas) una fila de chips se
+            desbordaba en varias filas; esto escala sin romperse y es más
+            rápido para ubicar una banda puntual que scrollear un <select>. */}
         {bandas.length > 1 && (
-          <div className="mb-5 flex items-center gap-3">
-            <label
-              htmlFor="filtro-banda"
-              className="font-display text-xs font-semibold tracking-widest text-muted uppercase"
-            >
-              Banda
-            </label>
-            <select
-              id="filtro-banda"
-              value={filtroBanda ?? ""}
-              onChange={(e) => elegirFiltro(e.target.value || null)}
-              className="rounded-md border border-ink-border bg-ink-card px-3 py-1.5 font-display text-xs font-medium tracking-wide text-neutral-100 uppercase outline-none focus:border-accent"
-            >
-              <option value="">Todas ({sesiones.length})</option>
-              {bandas.map((banda) => (
-                <option key={banda} value={banda}>
-                  {banda}
-                </option>
-              ))}
-            </select>
-          </div>
+          <FiltroBanda
+            bandas={bandas}
+            total={sesiones.length}
+            filtroBanda={filtroBanda}
+            onElegir={elegirFiltro}
+          />
         )}
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -144,6 +129,132 @@ export function Catalogo({ sesiones }: { sesiones: Sesion[] }) {
           })}
         </div>
       </div>
+    </div>
+  );
+}
+
+function normalizar(texto: string) {
+  return texto
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase();
+}
+
+function FiltroBanda({
+  bandas,
+  total,
+  filtroBanda,
+  onElegir,
+}: {
+  bandas: string[];
+  total: number;
+  filtroBanda: string | null;
+  onElegir: (banda: string | null) => void;
+}) {
+  const [query, setQuery] = useState(filtroBanda ?? "");
+  const [abierto, setAbierto] = useState(false);
+
+  const sugerencias = useMemo(() => {
+    const q = normalizar(query.trim());
+    if (!q) return bandas;
+    return bandas.filter((b) => normalizar(b).includes(q));
+  }, [bandas, query]);
+
+  function elegir(banda: string | null) {
+    onElegir(banda);
+    setQuery(banda ?? "");
+    setAbierto(false);
+  }
+
+  return (
+    <div className="relative mb-5 max-w-xs">
+      <label
+        htmlFor="filtro-banda"
+        className="mb-1.5 block font-display text-xs font-semibold tracking-widest text-muted uppercase"
+      >
+        Banda
+      </label>
+      <div className="relative">
+        <input
+          id="filtro-banda"
+          type="text"
+          role="combobox"
+          aria-expanded={abierto}
+          aria-controls="filtro-banda-lista"
+          aria-autocomplete="list"
+          autoComplete="off"
+          placeholder={`Buscar entre ${total} sesiones…`}
+          value={query}
+          onFocus={() => setAbierto(true)}
+          onBlur={() => setAbierto(false)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setAbierto(true);
+            // Si borra el texto a mano, vuelve a "Todas" al toque —
+            // no hace falta un botón de limpiar aparte.
+            if (e.target.value === "" && filtroBanda) onElegir(null);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && sugerencias[0]) elegir(sugerencias[0]);
+            if (e.key === "Escape") setAbierto(false);
+          }}
+          className="w-full rounded-md border border-ink-border bg-ink-card px-3 py-1.5 pr-8 text-sm text-neutral-100 outline-none placeholder:text-muted-2 focus:border-accent"
+        />
+        {filtroBanda && (
+          <button
+            type="button"
+            aria-label="Quitar filtro"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              elegir(null);
+            }}
+            className="absolute top-1/2 right-2 -translate-y-1/2 text-muted-2 hover:text-neutral-100"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
+      {abierto && (
+        <ul
+          id="filtro-banda-lista"
+          className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-md border border-ink-border bg-ink-card py-1 shadow-lg"
+        >
+          <li>
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                elegir(null);
+              }}
+              className={`block w-full px-3 py-1.5 text-left text-sm hover:bg-ink-border ${
+                !filtroBanda ? "text-accent-soft" : "text-neutral-100"
+              }`}
+            >
+              Todas ({total})
+            </button>
+          </li>
+          {sugerencias.length === 0 && (
+            <li className="px-3 py-1.5 text-sm text-muted-2">Sin resultados</li>
+          )}
+          {sugerencias.map((banda) => (
+            <li key={banda}>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  elegir(banda);
+                }}
+                className={`block w-full px-3 py-1.5 text-left text-sm hover:bg-ink-border ${
+                  filtroBanda === banda ? "text-accent-soft" : "text-neutral-100"
+                }`}
+              >
+                {banda}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
