@@ -4,19 +4,23 @@
 
 generator client {
   provider = "prisma-client-js"
-  // "native" genera el engine para desarrollo local (Windows). Los otros dos
-  // cubren el hosting de producción (Hostinger, CloudLinux/glibc — no musl):
-  // no se pudo confirmar por SSH la versión exacta de OpenSSL del sandbox de
-  // Node.js Selector todavía (la app no existe en hPanel), así que se
-  // incluyen ambas variantes glibc más comunes hoy. Si al desplegar el
-  // engine no coincide, Prisma tira un error que nombra el target exacto
-  // que falta — agregarlo acá y correr `prisma generate` de nuevo.
+  // El hosting real resultó ser el producto Node.js "web app" de Hostinger
+  // (deploy vía Git, build en su propio servidor) — ese build corre `npm
+  // install`/`prisma generate` en su propia infraestructura, así que en
+  // teoría ya genera el engine correcto solo. Se deja igual este binario
+  // Linux (glibc) de más como red de seguridad barata, por si alguna vez se
+  // vuelve a necesitar un build local para subir a mano.
   binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  // MySQL compartido de Hostinger: el usuario no tiene permiso de crear
+  // bases, así que `migrate dev` necesita esta base separada (vacía, solo
+  // para uso interno de Prisma) para poder seguir teniendo historial de
+  // migraciones versionado.
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 enum Role {
