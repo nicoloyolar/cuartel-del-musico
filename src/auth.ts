@@ -4,6 +4,12 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // Necesario en hosting propio detrás de un proxy (no Vercel, que lo
+  // detecta solo): sin esto, NextAuth rechaza cualquier request en modo
+  // producción con "UntrustedHost" — no se ve con `next dev` (ahí no se
+  // valida), solo aparece con `next start`/standalone, es decir, recién en
+  // el primer deploy real. Detectado probando el build standalone.
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/panel/login",

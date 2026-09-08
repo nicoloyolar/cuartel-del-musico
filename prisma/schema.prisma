@@ -4,6 +4,14 @@
 
 generator client {
   provider = "prisma-client-js"
+  // "native" genera el engine para desarrollo local (Windows). Los otros dos
+  // cubren el hosting de producción (Hostinger, CloudLinux/glibc — no musl):
+  // no se pudo confirmar por SSH la versión exacta de OpenSSL del sandbox de
+  // Node.js Selector todavía (la app no existe en hPanel), así que se
+  // incluyen ambas variantes glibc más comunes hoy. Si al desplegar el
+  // engine no coincide, Prisma tira un error que nombra el target exacto
+  // que falta — agregarlo acá y correr `prisma generate` de nuevo.
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
