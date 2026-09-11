@@ -6,7 +6,7 @@ const videoId = extraerVideoId(ENLACE_PRUEBA);
 
 export default function PruebaPrivadoPage() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 py-2">
       <div>
         <a href="/panel/pruebas-streaming" className="text-sm text-muted underline underline-offset-4">
           ← Volver a pruebas
@@ -30,7 +30,7 @@ export default function PruebaPrivadoPage() {
         <div className="relative aspect-video w-full max-w-3xl overflow-hidden rounded-2xl border border-ink-border bg-black">
           <iframe
             className="h-full w-full"
-            src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0`}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`}
             title="Prueba — video privado"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen

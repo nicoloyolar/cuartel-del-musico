@@ -27,10 +27,13 @@ export function StreamPlayer({ estado }: { estado: EstadoStream }) {
   const esVivo = estado.tipo === "live";
   // modestbranding/rel/iv_load_policy: reduce el chrome propio de YouTube
   // (logo grande, sugeridos) para que se sienta canal propio, no un video
-  // embebido — sin sacar controls (ahí vive el botón de mute/volumen, que
-  // hace falta porque el autoplay va silenciado).
+  // embebido — sin sacar controls (ahí vive el botón de mute/volumen).
+  // Autoplay con audio activado por defecto (a pedido del usuario): ojo que
+  // varios navegadores bloquean el autoplay con sonido sin interacción
+  // previa del visitante en el sitio — si eso pasa, YouTube deja el video
+  // pausado hasta que el visitante le da play a mano (ahí sí suena).
   const paramsComunes =
-    "autoplay=1&mute=1&modestbranding=1&rel=0&iv_load_policy=3&cc_load_policy=0";
+    "autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&cc_load_policy=0";
   const src = esVivo
     ? `https://www.youtube.com/embed/${estado.youtubeId}?${paramsComunes}`
     : `https://www.youtube.com/embed/${estado.youtubeId}?${paramsComunes}&start=${estado.startSegundos}`;
