@@ -1,14 +1,18 @@
 /**
  * Índice de pruebas de concepto de contenido externo de YouTube.
  *
- * Objetivo (a pedido del usuario, ver conversación): validar dos ideas de
+ * Objetivo (a pedido del usuario, ver conversación): validar ideas de
  * negocio antes de invertir en construirlas de verdad:
  *
  * 1. ¿Se puede traer a la plataforma un streaming/podcast que se hace por
  *    YouTube, fuera de la señal principal? → prueba "en vivo".
  * 2. ¿Se puede armar una versión "plus" con contenido exclusivo para
- *    suscriptores usando videos privados/ocultos de YouTube? → pruebas
- *    "privado" y "oculto".
+ *    suscriptores usando videos ocultos de YouTube? → prueba "oculto".
+ *
+ * (Hubo una tercera prueba, "video privado", para confirmar que YouTube no
+ * permite embeber videos privados en sitios de terceros — confirmado que
+ * falla como se esperaba, y como no sirve para nada real se sacó de acá a
+ * pedido del usuario.)
  *
  * Cada una es su propia página (a pedido del usuario) para poder revisar
  * cada resultado por separado. Página temporal — no está linkeada desde
@@ -23,7 +27,7 @@ export default function PruebasStreamingPage() {
           Pruebas de concepto — contenido externo de YouTube
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted">
-          Tres páginas separadas, una por enlace, para validar qué es
+          Dos páginas separadas, una por enlace, para validar qué es
           técnicamente posible antes de construir nada en serio sobre esto.
         </p>
       </div>
@@ -47,18 +51,10 @@ export default function PruebasStreamingPage() {
             que le servimos al navegador, cualquiera puede copiarlo y verlo
             directo en YouTube sin pasar por ninguna suscripción.
           </li>
-          <li>
-            <strong className="text-neutral-200">Video privado</strong>: se
-            espera que <strong className="text-neutral-200">falle</strong> —
-            YouTube no permite embeber videos privados en sitios de
-            terceros bajo ninguna circunstancia, ni con el visitante
-            logueado. Esta prueba es para confirmarlo en los hechos, no para
-            que funcione.
-          </li>
         </ul>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <a
           href="/panel/pruebas-streaming/en-vivo"
           className="rounded-lg border border-ink-border bg-ink-card p-5 transition hover:border-accent"
@@ -79,17 +75,6 @@ export default function PruebasStreamingPage() {
           </span>
           <p className="mt-2 text-sm text-muted">
             No listado — debería embeberse sin problema.
-          </p>
-        </a>
-        <a
-          href="/panel/pruebas-streaming/privado"
-          className="rounded-lg border border-ink-border bg-ink-card p-5 transition hover:border-accent"
-        >
-          <span className="font-display text-sm font-semibold tracking-wide text-neutral-400 uppercase">
-            3. Video privado
-          </span>
-          <p className="mt-2 text-sm text-muted">
-            Se espera que falle — para confirmarlo.
           </p>
         </a>
       </div>
