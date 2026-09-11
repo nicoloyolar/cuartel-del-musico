@@ -24,7 +24,7 @@ export default function PruebaOcultoPage() {
         <div className="relative aspect-video w-full max-w-3xl overflow-hidden rounded-2xl border border-ink-border bg-black">
           <iframe
             className="h-full w-full"
-            src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0`}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&modestbranding=1&rel=0`}
             title="Prueba — video oculto"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
