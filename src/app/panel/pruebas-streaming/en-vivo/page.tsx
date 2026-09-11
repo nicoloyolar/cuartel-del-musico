@@ -1,8 +1,8 @@
 import { extraerVideoId } from "@/lib/youtube";
 
 // Enlace de prueba pasado por el usuario:
-// https://www.youtube.com/live/05sSrLQcOcw?feature=shared
-const ENLACE_PRUEBA = "https://www.youtube.com/live/05sSrLQcOcw?feature=shared";
+// https://www.youtube.com/live/rFuPb91Avd4
+const ENLACE_PRUEBA = "https://www.youtube.com/live/rFuPb91Avd4";
 const videoId = extraerVideoId(ENLACE_PRUEBA);
 
 export default function PruebaEnVivoPage() {
