@@ -11,13 +11,13 @@ const VIDEO_ID_RE = /^[a-zA-Z0-9_-]{11}$/;
 
 /**
  * Extrae un ID de video de una URL de YouTube (watch?v=, youtu.be/, embed/,
- * shorts/) o lo devuelve tal cual si ya es un ID pelado de 11 caracteres.
- * Devuelve null si no logra reconocer nada válido.
+ * shorts/, live/) o lo devuelve tal cual si ya es un ID pelado de 11
+ * caracteres. Devuelve null si no logra reconocer nada válido.
  */
 export function extraerVideoId(valor: string): string | null {
   const limpio = valor.trim();
   const match = limpio.match(
-    /(?:v=|youtu\.be\/|embed\/|shorts\/)([a-zA-Z0-9_-]{11})/
+    /(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([a-zA-Z0-9_-]{11})/
   );
   if (match) return match[1];
   if (VIDEO_ID_RE.test(limpio)) return limpio;

@@ -10,12 +10,18 @@ import { NextResponse } from "next/server";
 // aparte, cada una con su propio chequeo de auth() (ver canal/actions.ts y
 // streaming/actions.ts) — solo ver está abierto, editar sigue exigiendo login.
 // (Next.js 16 renombró la convención "middleware" a "proxy"; misma API.)
+//
+// /panel/pruebas-streaming también se dejó abierta a pedido del usuario: son
+// solo páginas de lectura (embeds de YouTube, sin Server Actions ni datos
+// sensibles) para validar una prueba de concepto — quitar del listado (y
+// borrar las páginas) una vez terminada la validación.
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const esPublicoTemporal =
     pathname === "/panel/login" ||
     pathname.startsWith("/panel/streaming") ||
-    pathname.startsWith("/panel/canal");
+    pathname.startsWith("/panel/canal") ||
+    pathname.startsWith("/panel/pruebas-streaming");
   const isProtected = pathname.startsWith("/panel") && !esPublicoTemporal;
 
   if (isProtected && !req.auth) {
