@@ -35,12 +35,6 @@ export default function PruebaOcultoPage() {
           No se pudo extraer el ID de video del enlace de prueba.
         </p>
       )}
-
-      <p className="max-w-2xl text-xs text-muted-2">
-        Nota técnica: un video &quot;no listado&quot; se puede embeber sin
-        problema, pero el enlace no queda protegido — no es la base para un
-        contenido de acceso pago, solo para validar el formato.
-      </p>
     </div>
   );
 }
