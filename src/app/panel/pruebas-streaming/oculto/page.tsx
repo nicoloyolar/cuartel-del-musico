@@ -6,26 +6,13 @@ const ENLACE_PRUEBA = "https://youtu.be/fVzOsi4HYAY";
 const videoId = extraerVideoId(ENLACE_PRUEBA);
 
 /**
- * Misma presentación que el reproductor público (home) — reutiliza
- * StreamPlayer en modo "live" para que la prueba se vea con el mismo pulido
- * visual del sitio real, no como una maqueta aparte.
+ * Solo el reproductor, sin texto explicativo (a pedido del usuario, para
+ * mostrarle esto al cliente sin ruido) — reutiliza StreamPlayer en modo
+ * "live" para que se vea con el mismo pulido visual del sitio real.
  */
 export default function PruebaOcultoPage() {
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 py-2">
-      <div>
-        <a href="/panel/pruebas-streaming" className="text-sm text-muted underline underline-offset-4">
-          ← Volver a pruebas
-        </a>
-        <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-neutral-100">
-          Prueba de concepto — video no listado
-        </h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted">
-          Contenido externo de YouTube embebido con la misma presentación del
-          reproductor público del sitio.
-        </p>
-      </div>
-
+    <div className="mx-auto w-full max-w-4xl py-2">
       {videoId ? (
         <StreamPlayer
           estado={{ tipo: "live", youtubeId: videoId, titulo: "Prueba — Video Oculto" }}
