@@ -16,6 +16,11 @@ export default function LoginPlusPage() {
       <LoginForm />
 
       <p className="text-center text-sm text-muted">
+        <Link href="/plus/olvide-password" className="underline underline-offset-4 hover:text-neutral-200">
+          ¿Olvidaste tu contraseña?
+        </Link>
+      </p>
+      <p className="text-center text-sm text-muted">
         ¿No tenés cuenta?{" "}
         <Link href="/plus/registro" className="underline underline-offset-4 hover:text-neutral-200">
           Crear cuenta

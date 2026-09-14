@@ -196,6 +196,23 @@ model Suscriptor {
   activaHasta  DateTime?
   createdAt    DateTime   @default(now())
   pagos        PagoPlus[]
+  resetTokens  ResetTokenPlus[]
+}
+
+// Token de "olvidé mi contraseña" para Suscriptor. Se guarda solo el hash
+// (SHA-256) del token, no el valor plano — el link que se manda por email
+// lleva el token real, así que si la base se filtra no alcanza para
+// resetear contraseñas ajenas. Un solo uso (`usado`) y vence rápido.
+model ResetTokenPlus {
+  id           String     @id @default(cuid())
+  suscriptorId String
+  suscriptor   Suscriptor @relation(fields: [suscriptorId], references: [id], onDelete: Cascade)
+  tokenHash    String     @unique
+  expiraEn     DateTime
+  usado        Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+
+  @@index([suscriptorId])
 }
 
 // Un intento de pago (uno por cada vez que alguien aprieta "pagar"), para

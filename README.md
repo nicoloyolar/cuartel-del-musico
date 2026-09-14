@@ -55,6 +55,17 @@ vez creada la app en hPanel, marcados como `TODO` ahí mismo).
   producción del panel de MercadoPago Developers. Sin esto, el checkout de
   `/plus` avisa "no configurado" en vez de fallar (ver
   `src/lib/mercadoPago.ts`) — se puede desplegar sin él y agregarlo después.
+- `RESEND_API_KEY` (email de "olvidé mi contraseña" de Plus) — API key de
+  [resend.com](https://resend.com). Sin esto, el suscriptor ve el mismo
+  mensaje genérico de siempre pero el email nunca sale (queda en el log del
+  servidor) — ver `src/lib/email.ts`.
+- `RESEND_FROM_EMAIL` (opcional) — remitente, ej.
+  `"Cuartel del Músico <noreply@cuarteldelmusico.cl>"`. Requiere verificar
+  ese dominio en Resend (agregar registros DNS); sin esto se usa
+  `onboarding@resend.dev`, que en modo prueba **solo entrega al email con el
+  que se creó la cuenta de Resend**, no a suscriptores reales — hace falta
+  el dominio verificado para que el reseteo funcione en producción de
+  verdad.
 
 **Ojo con esto** (encontrado probando el build standalone, no antes):
 NextAuth v5 rechaza cualquier request en modo producción con
