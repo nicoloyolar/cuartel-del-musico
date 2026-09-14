@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { resolverEstadoStream } from "@/lib/stream";
 import { StreamPlayer } from "@/components/StreamPlayer";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -147,6 +148,8 @@ export default async function HomePage() {
           </div>
         )}
       </section>
+
+      <SiteFooter />
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Catalogo } from "@/components/Catalogo";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,8 @@ export default async function ExplorarPage() {
       </header>
 
       <Catalogo sesiones={sesiones} />
+
+      <SiteFooter />
     </main>
   );
 }

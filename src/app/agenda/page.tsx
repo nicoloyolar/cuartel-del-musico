@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -90,6 +91,8 @@ export default async function AgendaPage() {
           ))}
         </div>
       )}
+
+      <SiteFooter />
     </main>
   );
 }
