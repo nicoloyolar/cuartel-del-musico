@@ -108,6 +108,15 @@ model StreamConfig {
   updatedAt DateTime @updatedAt
 }
 
+// Las dos secciones de programación del canal (a pedido del usuario:
+// "radio TV streaming" y "podcast") — qué sección suena ahora se decide por
+// BloqueHorario; sin bloques configurados, el canal se comporta como antes
+// de esta feature (todo RADIO_TV, un solo ciclo).
+enum SeccionCanal {
+  RADIO_TV
+  PODCAST
+}
+
 // Lista de reproducción del "canal" que se ve en la home mientras no hay
 // streaming en vivo real. A diferencia de un embed de playlist de YouTube
 // (que cada visitante arranca desde cero, todos ven algo distinto según
@@ -115,21 +124,43 @@ model StreamConfig {
 // reloj de servidor en qué item + segundo debería estar "sonando ahora" y
 // todos los visitantes ven ese mismo punto — igual que Pluto TV o un canal
 // de streaming lineal armado sobre contenido grabado. Ver `src/lib/canal.ts`.
-// Editable desde /panel/canal.
+// Editable desde /panel/canal. Cada sección tiene su propio ciclo/orden
+// (el cálculo de posición corre por separado sobre los items de esa
+// sección) — ver `seccionActiva` en `src/lib/horarios.ts` para cómo se
+// decide cuál sección está al aire en cada momento.
 model CanalItem {
-  id               String   @id @default(cuid())
+  id               String       @id @default(cuid())
   titulo           String
   youtubeId        String
-  duracionSegundos Int      @default(240)
-  orden            Int      @default(0)
-  createdAt        DateTime @default(now())
+  duracionSegundos Int          @default(240)
+  orden            Int          @default(0)
+  seccion          SeccionCanal @default(RADIO_TV)
+  createdAt        DateTime     @default(now())
   // Se marca solo (sin login: ver marcarCanalItemBloqueado en actions.ts)
   // cuando el reproductor detecta que YouTube rechaza embeberlo (ej. un
   // reclamo de Content ID como LatinAutor-UMPG) — el item se saca del ciclo
   // de programación sin borrar el registro, reversible desde /panel/canal.
-  bloqueado        Boolean  @default(false)
+  bloqueado        Boolean      @default(false)
 
   @@index([orden])
+  @@index([seccion])
+}
+
+// Horario semanal: qué sección (RADIO_TV o PODCAST) debe estar al aire según
+// el día y la hora. Si el momento actual no cae dentro de ningún bloque, se
+// usa RADIO_TV por defecto (ver seccionActiva). Si hay bloques con horarios
+// superpuestos, gana el primero en orden de creación — ver seccionActiva.
+// Editable desde /panel/horarios.
+model BloqueHorario {
+  id            String       @id @default(cuid())
+  seccion       SeccionCanal
+  // Días de la semana en que aplica, formato JS Date#getDay (0=domingo..
+  // 6=sábado) separados por coma, ej "1,2,3,4,5" para lunes a viernes.
+  dias          String
+  horaInicioMin Int // minutos desde medianoche (0-1439)
+  horaFinMin    Int // minutos desde medianoche (1-1440) — si es menor o igual
+  // a horaInicioMin, el bloque cruza medianoche (ej 22:00 a 02:00)
+  createdAt     DateTime     @default(now())
 }
 
 // Catálogo "modo Netflix": sesiones grabadas de bandas de la escena de

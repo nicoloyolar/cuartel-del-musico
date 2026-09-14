@@ -24,16 +24,23 @@ export async function crearCanalItem(formData: FormData) {
   const minutos = Number(formData.get("minutos") ?? 0) || 0;
   const segundos = Number(formData.get("segundos") ?? 0) || 0;
   const duracionSegundos = minutos * 60 + segundos;
+  const seccion = (formData.get("seccion") as string) === "PODCAST" ? "PODCAST" : "RADIO_TV";
 
   if (!titulo || !youtubeId || duracionSegundos <= 0) return;
 
-  const ultimo = await prisma.canalItem.findFirst({ orderBy: { orden: "desc" } });
+  // El orden se numera por separado dentro de cada sección — cada una tiene
+  // su propio ciclo de reproducción (ver src/lib/stream.ts).
+  const ultimo = await prisma.canalItem.findFirst({
+    where: { seccion },
+    orderBy: { orden: "desc" },
+  });
 
   await prisma.canalItem.create({
     data: {
       titulo,
       youtubeId,
       duracionSegundos,
+      seccion,
       orden: (ultimo?.orden ?? 0) + 1,
     },
   });
@@ -75,7 +82,16 @@ export async function moverCanalItem(id: string, direccion: "arriba" | "abajo") 
   const session = await auth();
   if (!session) return;
 
-  const items = await prisma.canalItem.findMany({ orderBy: { orden: "asc" } });
+  const actualItem = await prisma.canalItem.findUnique({ where: { id } });
+  if (!actualItem) return;
+
+  // El reordenamiento no cruza secciones: cada una tiene su propio ciclo
+  // (ver src/lib/stream.ts), así que "arriba"/"abajo" se mueve solo entre
+  // vecinos de la misma sección.
+  const items = await prisma.canalItem.findMany({
+    where: { seccion: actualItem.seccion },
+    orderBy: { orden: "asc" },
+  });
   const index = items.findIndex((i) => i.id === id);
   if (index === -1) return;
 

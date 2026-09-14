@@ -15,6 +15,9 @@ export function StreamingSubNav() {
       <Link href="/panel/canal" className="text-muted hover:text-neutral-100">
         Canal (Radio-TV)
       </Link>
+      <Link href="/panel/horarios" className="text-muted hover:text-neutral-100">
+        Horarios
+      </Link>
       <Link href="/" className="ml-auto text-muted-2 hover:text-neutral-100">
         ← Volver al sitio
       </Link>

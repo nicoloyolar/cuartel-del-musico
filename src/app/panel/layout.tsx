@@ -9,6 +9,7 @@ const NAV = [
   { href: "/panel/cobros", label: "Cobros" },
   { href: "/panel/streaming", label: "Streaming" },
   { href: "/panel/canal", label: "Canal (Radio-TV)" },
+  { href: "/panel/horarios", label: "Horarios" },
   { href: "/panel/sesiones", label: "Sesiones (Explorar)" },
 ];
 

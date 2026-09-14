@@ -100,7 +100,8 @@ export function StreamPlayer({ estado }: { estado: EstadoStream }) {
             <circle cx="18" cy="16" r="3" stroke="#f2a900" strokeWidth="2" />
           </svg>
           <span className="text-[11px] font-semibold tracking-wide text-neutral-300 uppercase">
-            Canal · Cuartel del Músico
+            {estado.tipo === "canal" && estado.seccion === "PODCAST" ? "Podcast" : "Radio-TV"} ·
+            Cuartel del Músico
           </span>
         </div>
       )}

@@ -2,44 +2,87 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { calcularPosicionActual } from "@/lib/canal";
+import { seccionActiva } from "@/lib/horarios";
 import { StreamingSubNav } from "@/components/panel/StreamingSubNav";
 import { crearCanalItem, eliminarCanalItem, moverCanalItem, reactivarCanalItem } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function CanalPage() {
-  const [items, session] = await Promise.all([
-    prisma.canalItem.findMany({ orderBy: { orden: "asc" } }),
+const SECCIONES = [
+  { valor: "RADIO_TV" as const, etiqueta: "Radio-TV" },
+  { valor: "PODCAST" as const, etiqueta: "Podcast" },
+];
+
+export default async function CanalPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ seccion?: string }>;
+}) {
+  const { seccion: seccionParam } = await searchParams;
+  const seccionVista = seccionParam === "PODCAST" ? "PODCAST" : "RADIO_TV";
+
+  const [items, bloques, session] = await Promise.all([
+    prisma.canalItem.findMany({ where: { seccion: seccionVista }, orderBy: { orden: "asc" } }),
+    prisma.bloqueHorario.findMany({ orderBy: { createdAt: "asc" } }),
     auth(),
   ]);
-  // La posición "sonando ahora" y la duración del ciclo se calculan solo con
-  // los items activos — los bloqueados (ver CanalItem.bloqueado) están
-  // excluidos de la programación real (mismo filtro que src/lib/stream.ts)
-  // pero igual se listan más abajo para poder reactivarlos o eliminarlos.
+
+  // La sección que se ve/edita acá (seccionVista, por tab) no siempre es la
+  // que está al aire ahora mismo (eso lo decide el horario en /panel/horarios)
+  // — "sonando ahora" solo se muestra si coinciden.
+  const seccionEnAire = seccionActiva(bloques, new Date());
   const itemsActivos = items.filter((i) => !i.bloqueado);
-  const posicion = calcularPosicionActual(itemsActivos, new Date());
+  const posicion =
+    seccionVista === seccionEnAire ? calcularPosicionActual(itemsActivos, new Date()) : null;
   const duracionTotal = itemsActivos.reduce((acc, i) => acc + i.duracionSegundos, 0);
 
   const contenido = (
     <>
       <div>
         <h1 className="font-display text-2xl font-semibold tracking-tight text-neutral-100">
-          Canal (Radio-TV)
+          Canal (Radio-TV / Podcast)
         </h1>
         <p className="mt-1 max-w-2xl text-sm text-muted">
-          Lista de reproducción del canal simulado que se ve en la home mientras no hay señal en
-          vivo real. Se reproduce en este orden, en loop, y se calcula por reloj de servidor qué
-          item corresponde ahora mismo — todos los visitantes ven el mismo punto, como una
-          transmisión real. Duración total del ciclo:{" "}
-          <strong>{formatDuracion(duracionTotal)}</strong>.
+          Cada sección tiene su propia lista y su propio ciclo — cuál está al aire ahora se decide
+          por el horario configurado en{" "}
+          <Link href="/panel/horarios" className="underline underline-offset-4 hover:text-neutral-200">
+            /panel/horarios
+          </Link>
+          . Dentro de cada sección se reproduce en este orden, en loop, calculado por reloj de
+          servidor para que todos los visitantes vean el mismo punto.
         </p>
       </div>
+
+      <nav className="flex items-center gap-2">
+        {SECCIONES.map((s) => (
+          <Link
+            key={s.valor}
+            href={`/panel/canal?seccion=${s.valor}`}
+            className={`rounded-md px-3 py-1.5 text-sm font-medium ${
+              seccionVista === s.valor
+                ? "bg-accent text-neutral-50"
+                : "bg-ink-card text-muted hover:text-neutral-100"
+            }`}
+          >
+            {s.etiqueta}
+            {seccionEnAire === s.valor && (
+              <span className="ml-1.5 text-[10px] uppercase opacity-80">· al aire</span>
+            )}
+          </Link>
+        ))}
+      </nav>
+
+      <p className="text-sm text-muted">
+        Duración total del ciclo de <strong>{SECCIONES.find((s) => s.valor === seccionVista)?.etiqueta}</strong>:{" "}
+        <strong>{formatDuracion(duracionTotal)}</strong>.
+      </p>
 
       {session ? (
         <form
           action={crearCanalItem}
           className="grid grid-cols-1 gap-3 rounded-lg border border-ink-border bg-ink-card p-4 md:grid-cols-2"
         >
+          <input type="hidden" name="seccion" value={seccionVista} />
           <input
             name="titulo"
             placeholder="Título (ej: Krohma — Onírica) *"
@@ -78,7 +121,7 @@ export default async function CanalPage() {
             type="submit"
             className="col-span-full rounded-md bg-accent px-3 py-2 text-sm font-semibold text-neutral-50 transition-colors hover:bg-accent-soft md:w-fit"
           >
-            Agregar al canal
+            Agregar a {SECCIONES.find((s) => s.valor === seccionVista)?.etiqueta}
           </button>
         </form>
       ) : (
@@ -189,8 +232,8 @@ export default async function CanalPage() {
         })}
         {items.length === 0 && (
           <li className="px-4 py-6 text-center text-muted">
-            El canal está vacío — mientras no cargues nada acá, la home mostrará &quot;streaming en
-            preparación&quot;.
+            Esta sección está vacía — mientras no cargues nada acá, si le toca estar al aire la
+            home mostrará &quot;streaming en preparación&quot;.
           </li>
         )}
       </ul>
