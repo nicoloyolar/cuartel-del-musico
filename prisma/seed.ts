@@ -33,6 +33,17 @@ async function main() {
     },
   });
 
+  // --- Configuración inicial del plan Plus ---
+  await prisma.planPlusConfig.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      nombre: "Cuartel del Músico Plus",
+      precioMensual: 4990,
+    },
+  });
+
   // --- Bandas de ejemplo ---
   const banda = await prisma.banda.upsert({
     where: { id: "banda-demo" },

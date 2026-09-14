@@ -51,6 +51,10 @@ vez creada la app en hPanel, marcados como `TODO` ahí mismo).
   app (esa carpeta se pisa entera en cada deploy). Ej:
   `file:/home/u590576138/cuartel-del-musico-data/prod.db`.
 - `AUTH_SECRET` — uno nuevo generado para producción, no el de desarrollo.
+- `MERCADOPAGO_ACCESS_TOKEN` (Cuartel del Músico Plus) — Access Token de
+  producción del panel de MercadoPago Developers. Sin esto, el checkout de
+  `/plus` avisa "no configurado" en vez de fallar (ver
+  `src/lib/mercadoPago.ts`) — se puede desplegar sin él y agregarlo después.
 
 **Ojo con esto** (encontrado probando el build standalone, no antes):
 NextAuth v5 rechaza cualquier request en modo producción con

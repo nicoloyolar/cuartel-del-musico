@@ -177,3 +177,63 @@ model Sesion {
 
   @@index([orden])
 }
+
+// ---- Cuartel del Músico Plus ----
+// Cuentas de público que pagan por acceso a contenido exclusivo. Separadas
+// a propósito de `User` (que es solo staff del panel, vía NextAuth
+// Credentials): acá el login es de autoservicio (cualquiera se registra) y
+// usa su propia sesión por cookie firmada (ver src/lib/suscriptorSession.ts),
+// no NextAuth. v1 pragmática (a pedido del usuario, para lanzar rápido):
+// pago único por período, sin cobro recurrente automático — activaHasta se
+// extiende manualmente cada vez que se aprueba un pago (ver PagoPlus).
+model Suscriptor {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  nombre       String?
+  // null = nunca pagó. Si es una fecha pasada, la suscripción venció y no
+  // tiene acceso a /plus hasta volver a pagar — ver src/lib/plusAcceso.ts.
+  activaHasta  DateTime?
+  createdAt    DateTime   @default(now())
+  pagos        PagoPlus[]
+}
+
+// Un intento de pago (uno por cada vez que alguien aprieta "pagar"), para
+// trazabilidad/soporte y para que el webhook de MercadoPago tenga contra
+// qué fila matchear (external_reference = este id). "pendiente" hasta que
+// el webhook confirma el resultado.
+model PagoPlus {
+  id           String     @id @default(cuid())
+  suscriptorId String
+  suscriptor   Suscriptor @relation(fields: [suscriptorId], references: [id], onDelete: Cascade)
+  monto        Int // CLP
+  estado       String     @default("pendiente") // "pendiente" | "aprobado" | "rechazado"
+  referenciaMp String? // id de pago de MercadoPago, una vez que el webhook lo confirma
+  createdAt    DateTime   @default(now())
+
+  @@index([suscriptorId])
+}
+
+// Catálogo de contenido exclusivo Plus: videos "ocultos" (unlisted) de
+// YouTube — mismo mecanismo validado en /panel/pruebas-streaming/oculto (un
+// unlisted embebe igual que uno público, pero no aparece en listados de
+// YouTube). Editable desde /panel/plus.
+model VideoPlus {
+  id          String   @id @default(cuid())
+  titulo      String
+  youtubeId   String
+  descripcion String?
+  orden       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([orden])
+}
+
+// Configuración única (fila con id=1) del plan Plus — precio editable desde
+// /panel/plus sin tocar código, mismo patrón que StreamConfig.
+model PlanPlusConfig {
+  id            Int      @id @default(1)
+  nombre        String   @default("Cuartel del Músico Plus")
+  precioMensual Int      @default(4990) // CLP
+  updatedAt     DateTime @updatedAt
+}

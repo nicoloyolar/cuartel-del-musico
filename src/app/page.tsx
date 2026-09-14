@@ -57,6 +57,12 @@ export default async function HomePage() {
           >
             Ver agenda completa →
           </Link>
+          <Link
+            href="/plus"
+            className="font-display text-xs font-semibold tracking-widest text-amber uppercase hover:text-neutral-100"
+          >
+            Cuartel del Músico Plus →
+          </Link>
         </div>
       </header>
 

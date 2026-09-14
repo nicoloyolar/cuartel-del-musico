@@ -11,6 +11,7 @@ const NAV = [
   { href: "/panel/canal", label: "Canal (Radio-TV)" },
   { href: "/panel/horarios", label: "Horarios" },
   { href: "/panel/sesiones", label: "Sesiones (Explorar)" },
+  { href: "/panel/plus", label: "Plus" },
 ];
 
 export default async function PanelLayout({
