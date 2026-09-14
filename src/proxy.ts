@@ -13,18 +13,17 @@ import { NextResponse } from "next/server";
 // editar sigue exigiendo login.
 // (Next.js 16 renombró la convención "middleware" a "proxy"; misma API.)
 //
-// /panel/pruebas-streaming también se dejó abierta a pedido del usuario: son
-// solo páginas de lectura (embeds de YouTube, sin Server Actions ni datos
-// sensibles) para validar una prueba de concepto — quitar del listado (y
-// borrar las páginas) una vez terminada la validación.
+// (/panel/pruebas-streaming existió acá temporalmente para validar una
+// prueba de concepto de contenido externo de YouTube — se borró una vez
+// terminada la validación: "oculto" se convirtió en el mecanismo real de
+// Cuartel del Músico Plus, "en vivo" ya se probó y se dejó atrás.)
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const esPublicoTemporal =
     pathname === "/panel/login" ||
     pathname.startsWith("/panel/streaming") ||
     pathname.startsWith("/panel/canal") ||
-    pathname.startsWith("/panel/horarios") ||
-    pathname.startsWith("/panel/pruebas-streaming");
+    pathname.startsWith("/panel/horarios");
   const isProtected = pathname.startsWith("/panel") && !esPublicoTemporal;
 
   if (isProtected && !req.auth) {
