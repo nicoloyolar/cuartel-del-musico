@@ -49,6 +49,28 @@ export async function eliminarCanalItem(id: string) {
   revalidarTodo();
 }
 
+// Llamada desde el cliente (CanalPlayer) cuando la IFrame API de YouTube
+// reporta que un video no se puede reproducir (eliminado, o embed rechazado
+// por el dueño o por un reclamo de Content ID, ej. LatinAutor-UMPG). A
+// propósito sin auth(): es una señal de "esto se rompió", no una mutación
+// sensible — en el peor caso alguien la llama con un id que no existe (no
+// pasa nada, el update simplemente no encuentra la fila) o marca bloqueado
+// un item ajeno a mano por las devtools, reversible con un clic en
+// /panel/canal. El trade-off vale la pena para que el canal se autorepare
+// sin depender de que un admin esté mirando.
+export async function marcarCanalItemBloqueado(id: string) {
+  await prisma.canalItem.updateMany({ where: { id }, data: { bloqueado: true } });
+  revalidarTodo();
+}
+
+export async function reactivarCanalItem(id: string) {
+  const session = await auth();
+  if (!session) return;
+
+  await prisma.canalItem.update({ where: { id }, data: { bloqueado: false } });
+  revalidarTodo();
+}
+
 export async function moverCanalItem(id: string, direccion: "arriba" | "abajo") {
   const session = await auth();
   if (!session) return;

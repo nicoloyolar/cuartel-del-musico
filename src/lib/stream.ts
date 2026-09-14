@@ -6,6 +6,7 @@ export type EstadoStream =
   | { tipo: "live"; youtubeId: string; titulo: string | null }
   | {
       tipo: "canal";
+      itemId: string;
       youtubeId: string;
       tituloItem: string;
       startSegundos: number;
@@ -28,13 +29,21 @@ export async function resolverEstadoStream(): Promise<EstadoStream> {
     return { tipo: "live", youtubeId: config.youtubeId, titulo: config.titulo };
   }
 
-  const items = await prisma.canalItem.findMany({ orderBy: { orden: "asc" } });
+  // Los bloqueados (ver CanalItem.bloqueado) se excluyen del ciclo: son
+  // items que el reproductor detectó que YouTube rechaza embeber (ej. un
+  // reclamo de Content ID) y no deben volver a programarse hasta que un
+  // admin los reactive desde /panel/canal.
+  const items = await prisma.canalItem.findMany({
+    where: { bloqueado: false },
+    orderBy: { orden: "asc" },
+  });
   const posicion = calcularPosicionActual(items, new Date());
   if (!posicion) return { tipo: "vacio" };
 
   const restanteSegundos = posicion.item.duracionSegundos - posicion.offsetSegundos;
   return {
     tipo: "canal",
+    itemId: posicion.item.id,
     youtubeId: posicion.item.youtubeId,
     tituloItem: posicion.item.titulo,
     startSegundos: posicion.offsetSegundos,

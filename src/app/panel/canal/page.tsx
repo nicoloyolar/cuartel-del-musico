@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { calcularPosicionActual } from "@/lib/canal";
 import { StreamingSubNav } from "@/components/panel/StreamingSubNav";
-import { crearCanalItem, eliminarCanalItem, moverCanalItem } from "./actions";
+import { crearCanalItem, eliminarCanalItem, moverCanalItem, reactivarCanalItem } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -12,8 +12,13 @@ export default async function CanalPage() {
     prisma.canalItem.findMany({ orderBy: { orden: "asc" } }),
     auth(),
   ]);
-  const posicion = calcularPosicionActual(items, new Date());
-  const duracionTotal = items.reduce((acc, i) => acc + i.duracionSegundos, 0);
+  // La posición "sonando ahora" y la duración del ciclo se calculan solo con
+  // los items activos — los bloqueados (ver CanalItem.bloqueado) están
+  // excluidos de la programación real (mismo filtro que src/lib/stream.ts)
+  // pero igual se listan más abajo para poder reactivarlos o eliminarlos.
+  const itemsActivos = items.filter((i) => !i.bloqueado);
+  const posicion = calcularPosicionActual(itemsActivos, new Date());
+  const duracionTotal = itemsActivos.reduce((acc, i) => acc + i.duracionSegundos, 0);
 
   const contenido = (
     <>
@@ -106,6 +111,14 @@ export default async function CanalPage() {
                       Sonando ahora
                     </span>
                   )}
+                  {item.bloqueado && (
+                    <span
+                      className="ml-1 rounded-md bg-red-500/10 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-red-400 uppercase"
+                      title="YouTube rechazó embeber este video (eliminado o bloqueado por reclamo de derechos) — no se programa hasta reactivarlo"
+                    >
+                      Bloqueado
+                    </span>
+                  )}
                 </p>
                 <p className="text-sm text-muted">
                   youtube.com/watch?v={item.youtubeId} · {formatDuracion(item.duracionSegundos)}
@@ -113,6 +126,22 @@ export default async function CanalPage() {
               </div>
               {session && (
                 <div className="flex items-center gap-3">
+                  {item.bloqueado && (
+                    <form
+                      action={async () => {
+                        "use server";
+                        await reactivarCanalItem(item.id);
+                      }}
+                    >
+                      <button
+                        type="submit"
+                        className="text-sm text-muted-2 hover:text-neutral-200"
+                        title="Reactivar (volver a incluir en la programación)"
+                      >
+                        Reactivar
+                      </button>
+                    </form>
+                  )}
                   <form
                     action={async () => {
                       "use server";

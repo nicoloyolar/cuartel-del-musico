@@ -123,6 +123,11 @@ model CanalItem {
   duracionSegundos Int      @default(240)
   orden            Int      @default(0)
   createdAt        DateTime @default(now())
+  // Se marca solo (sin login: ver marcarCanalItemBloqueado en actions.ts)
+  // cuando el reproductor detecta que YouTube rechaza embeberlo (ej. un
+  // reclamo de Content ID como LatinAutor-UMPG) — el item se saca del ciclo
+  // de programación sin borrar el registro, reversible desde /panel/canal.
+  bloqueado        Boolean  @default(false)
 
   @@index([orden])
 }

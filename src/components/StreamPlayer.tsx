@@ -1,5 +1,6 @@
 import type { EstadoStream } from "@/lib/stream";
 import { CanalAutoRefresh } from "@/components/CanalAutoRefresh";
+import { CanalPlayer } from "@/components/CanalPlayer";
 
 /**
  * Reproductor embebido del canal público.
@@ -44,14 +45,27 @@ export function StreamPlayer({ estado }: { estado: EstadoStream }) {
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-ink-border bg-black">
       {estado.tipo === "canal" && <CanalAutoRefresh refreshEnMs={estado.refreshEnMs} />}
-      <iframe
-        key={src}
-        className="h-full w-full"
-        src={src}
-        title={titulo}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
+      {estado.tipo === "canal" ? (
+        // Vía IFrame API (no un <iframe src> plano) para poder detectar si
+        // YouTube rechaza el embed de este item y saltar al siguiente solo
+        // — ver CanalPlayer. key fuerza un remount limpio por cada item.
+        <CanalPlayer
+          key={estado.itemId}
+          itemId={estado.itemId}
+          youtubeId={estado.youtubeId}
+          startSegundos={estado.startSegundos}
+          titulo={titulo}
+        />
+      ) : (
+        <iframe
+          key={src}
+          className="h-full w-full"
+          src={src}
+          title={titulo}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      )}
 
       {/* badge de estado */}
       <div className="pointer-events-none absolute top-4 left-4 flex items-center gap-2 rounded-full border border-white/10 bg-ink/55 px-4 py-2 backdrop-blur-sm">
